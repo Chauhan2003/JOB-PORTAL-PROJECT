@@ -2,8 +2,9 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import morgan from "morgan";
-import dotnev from "dotenv";
 import dbConnection from "./database/index.js";
+import userRoutes from "./routes/user.route.js";
+import dotnev from "dotenv";
 dotnev.config();
 
 const app = express();
@@ -23,6 +24,9 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 
 dbConnection();
+
+// Routes:-
+app.use("/api/v1/user", userRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

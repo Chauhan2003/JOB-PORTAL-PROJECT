@@ -14,16 +14,15 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      minlength: 8,
     },
     phone: {
-      type: Number,
+      type: BigInt,
       required: true,
       unique: true,
     },
     role: {
       type: String,
-      default: "user",
+      default: "student",
       enum: ["student", "recruiter"],
     },
     profile: {
