@@ -1,6 +1,9 @@
 import User from "../models/user.model.js";
 import { compareHash, hashString } from "../utils/bcryptHandling.js";
-import { sendVarificationEmail } from "../utils/sendMail.js";
+import {
+  sendDeleteAccountEmail,
+  sendVarificationEmail,
+} from "../utils/sendMail.js";
 import { generateToken } from "../utils/tokenHandling.js";
 
 export const registerUser = async (req, res) => {
@@ -118,6 +121,73 @@ export const loginUser = async (req, res) => {
       message: `Welcome ${user.fullName}`,
       user: resUser,
     });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error!",
+    });
+  }
+};
+
+export const logout = (req, res) => {
+  try {
+    res.clearCookie("job-portal");
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error!",
+    });
+  }
+};
+
+export const deleteAccount = async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      message: "Please fill all fields",
+    });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const passwordMatch = await compareHash(password, user.password);
+    if (!passwordMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
+    await User.findByIdAndDelete(user._id);
+
+    try {
+      await sendDeleteAccountEmail(user);
+
+      return res.status(200).json({
+        success: true,
+        message: "Account deleted successfully",
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
+        success: false,
+        message: "Unable to send delete account confirmation email",
+      });
+    }
   } catch (err) {
     console.error(err);
     return res.status(500).json({
