@@ -100,9 +100,7 @@ export const loginUser = async (req, res) => {
     const token = generateToken(
       {
         userId: user._id,
-        fullName: user.fullName,
         email: user.email,
-        phone: user.phone,
       },
       "2d"
     );
@@ -116,7 +114,7 @@ export const loginUser = async (req, res) => {
       profile: user.profile,
     };
 
-    res.cookie("job-portal", token, {
+    res.cookie("jobPortal", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
@@ -139,7 +137,7 @@ export const loginUser = async (req, res) => {
 
 export const logout = (req, res) => {
   try {
-    res.clearCookie("job-portal");
+    res.clearCookie("jobPortal");
     return res.status(200).json({
       success: true,
       message: "Logged out successfully",
@@ -154,36 +152,14 @@ export const logout = (req, res) => {
 };
 
 export const deleteAccount = async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({
-      success: false,
-      message: "Please fill all fields",
-    });
-  }
+  const { userId, email } = req.user;
 
   try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User does not exist",
-      });
-    }
-
-    const passwordMatch = await compareHash(password, user.password);
-    if (!passwordMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid email or password",
-      });
-    }
-
-    await User.findByIdAndDelete(user._id);
-    res.clearCookie("job-portal");
+    await User.findByIdAndDelete(userId);
+    res.clearCookie("jobPortal");
 
     try {
-      await sendDeleteAccountEmail(user);
+      await sendDeleteAccountEmail({ email });
 
       return res.status(200).json({
         success: true,
@@ -196,6 +172,49 @@ export const deleteAccount = async (req, res) => {
         message: "Unable to send delete account confirmation email",
       });
     }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error!",
+    });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  const { userId } = req.user;
+  // const file = req.file;
+
+  const updateData = {};
+
+  if (req.body.fullName) updateData.fullName = req.body.fullName;
+  if (req.body.phone) updateData.phone = req.body.phone;
+  if (req.body.bio) updateData.bio = req.body.bio;
+  if (req.body.skills) updateData.skills = req.body.skills.split(",");
+
+  try {
+    // yeha cloudinary aye ga
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+      new: true,
+    });
+
+    // yeha hm resume ko add kre ge
+
+    const resUser = {
+      _id: updatedUser._id,
+      fullName: updatedUser.fullName,
+      email: updatedUser.email,
+      phone: updatedUser.phone,
+      role: updatedUser.role,
+      profile: updatedUser.profile,
+    };
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: resUser,
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({
