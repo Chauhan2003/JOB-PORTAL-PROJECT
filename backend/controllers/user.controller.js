@@ -78,7 +78,7 @@ export const loginUser = async (req, res) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password",
+        message: "User does not exist",
       });
     }
 
@@ -87,6 +87,13 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
+      });
+    }
+
+    if (user.verified === false) {
+      return res.status(401).json({
+        success: false,
+        message: "User is not verified",
       });
     }
 
@@ -160,7 +167,7 @@ export const deleteAccount = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "User does not exist",
       });
     }
 
@@ -173,6 +180,7 @@ export const deleteAccount = async (req, res) => {
     }
 
     await User.findByIdAndDelete(user._id);
+    res.clearCookie("job-portal");
 
     try {
       await sendDeleteAccountEmail(user);

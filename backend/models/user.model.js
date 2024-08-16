@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     phone: {
-      type: BigInt,
+      type: Number,
       required: true,
       unique: true,
     },
@@ -24,6 +24,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "student",
       enum: ["student", "recruiter"],
+    },
+    verified: {
+      type: Boolean,
+      default: false,
     },
     profile: {
       bio: {
