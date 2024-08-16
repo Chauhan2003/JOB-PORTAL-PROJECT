@@ -49,9 +49,7 @@ export const sendVarificationEmail = async (user) => {
   await transporter.sendMail(mailOptions);
 };
 
-export const sendDeleteAccountEmail = async (user) => {
-  const { email, fullName } = user;
-
+export const sendDeleteAccountEmail = async ({ email }) => {
   const mailOptions = {
     from: AUTH_EMAIL,
     to: email,
@@ -62,7 +60,7 @@ export const sendDeleteAccountEmail = async (user) => {
           <h1 style="margin: 0; font-size: 24px;">Account Deletion Confirmation</h1>
         </div>
         <div style="padding: 30px; background-color: white;">
-          <h2 style="color: #FF5722; margin-top: 0;">Hello, ${fullName}</h2>
+          <h2 style="color: #FF5722; margin-top: 0;">Hello, User</h2>
           <p style="font-size: 16px; color: #555;">We're sorry to see you go. Your account on Job Portal Platform has been successfully deleted.</p>
           <p style="font-size: 16px; color: #555;">If you didn't request this action, please contact our support team immediately.</p>
           <p style="font-size: 16px; color: #555;">Thank you for being a part of our community.</p>
