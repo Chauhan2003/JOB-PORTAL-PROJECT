@@ -1,10 +1,11 @@
 import React from "react";
 import "./App.css";
+import Navbar from "./components/Navbar";
 
 const App = () => {
   return (
     <>
-      <h1>Lets build Job Portal</h1>
+      <Navbar />
     </>
   );
 };
