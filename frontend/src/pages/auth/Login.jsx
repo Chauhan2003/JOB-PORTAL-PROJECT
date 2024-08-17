@@ -49,6 +49,44 @@ const Login = () => {
           gap: "5px",
         }}
       >
+        <Typography fontSize={19} color={"#2D2D2D"} fontWeight={"bold"}>
+          Welcome back!
+        </Typography>
+        <Typography fontSize={15} color={"#515151"}>
+          Sign in to access your account and explore tailored job opportunities.
+        </Typography>
+        <Typography fontSize={12} color={"#515151"}>
+          By signing in, you agree to jobPortal's{" "}
+          <span
+            style={{
+              color: "#003A9B",
+              textDecoration: "underline",
+            }}
+          >
+            Terms
+          </span>{" "}
+          of Service and acknowledge that you have read our{" "}
+          <span
+            style={{
+              color: "#003A9B",
+              textDecoration: "underline",
+            }}
+          >
+            Privacy Policy
+          </span>{" "}
+          and{" "}
+          <span
+            style={{
+              color: "#003A9B",
+              textDecoration: "underline",
+            }}
+          >
+            Cookie and Privacy
+          </span>{" "}
+          . You may receive marketing messages from jobPortal, which you can opt
+          out of at any time by following the unsubscribe link in the messages
+          or as detailed in our terms.
+        </Typography>
         <FormControl
           sx={{
             display: "flex",

@@ -56,11 +56,27 @@ const Register = () => {
           Create an account or sign in.
         </Typography>
         <Typography fontSize={12} color={"#515151"}>
-          By creating an account or signing in, you understand and agree to
-          jobPortal's Terms. You also consent to our Cookie and Privacy
-          policies. You will receive marketing messages from jobPortal and may
-          opt out at any time by following the unsubscribe link in our messages,
-          or as detailed in our terms.
+          By signing up or logging in, you agree to jobPortal's{" "}
+          <span
+            style={{
+              color: "#003A9B",
+              textDecoration: "underline",
+            }}
+          >
+            Terms
+          </span>{" "}
+          and consent to our{" "}
+          <span
+            style={{
+              color: "#003A9B",
+              textDecoration: "underline",
+            }}
+          >
+            Cookie and Privacy
+          </span>{" "}
+          Policies. You'll receive marketing messages from jobPortal, which you
+          can opt out of anytime via the unsubscribe link in our emails or as
+          outlined in our terms.
         </Typography>
         <FormControl
           sx={{
