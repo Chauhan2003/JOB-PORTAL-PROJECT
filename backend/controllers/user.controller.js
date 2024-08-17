@@ -8,6 +8,7 @@ import { generateToken } from "../utils/tokenHandling.js";
 
 export const registerUser = async (req, res) => {
   const { fullName, email, phone, password, role } = req.body;
+
   if (!fullName || !email || !phone || !password || !role) {
     return res.status(400).json({
       success: false,
@@ -19,6 +20,14 @@ export const registerUser = async (req, res) => {
     return res.status(400).json({
       success: false,
       message: "Password must be at least 8 characters long",
+    });
+  }
+
+  const phoneRegex = /^\d{10}$/;
+  if (!phoneRegex.test(phone)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid phone number",
     });
   }
 
@@ -41,20 +50,13 @@ export const registerUser = async (req, res) => {
       role,
     });
 
-    try {
-      await sendVarificationEmail(newUser);
-      await newUser.save();
-      return res.status(200).json({
-        success: true,
-        message: "Verify your email address",
-      });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({
-        success: false,
-        message: "Registeration failed",
-      });
-    }
+    await sendVarificationEmail(newUser);
+    await newUser.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Verify your email address",
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({

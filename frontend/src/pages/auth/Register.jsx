@@ -7,11 +7,93 @@ import {
   Typography,
   Grid,
   Button,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  CircularProgress,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { userRoute } from "../../utils/Routes";
 
 const Register = () => {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    password: "",
+    role: "student",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [errorMess, setErrorMess] = useState("");
+  const [fullNameError, setFullNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+
+    if (name === "email") {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      setEmailError(emailPattern.test(value) ? "" : "Invalid email format");
+    } else if (name === "fullName") {
+      setFullNameError(value ? "" : "Full name is required.");
+    } else if (name === "password") {
+      setPasswordError(
+        value.length >= 8 ? "" : "Password must be at least 8 characters long"
+      );
+    } else if (name === "phone") {
+      setPhoneError(
+        value.length === 10 ? "" : "Phone number must be 10 digits"
+      );
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    if (!formData.fullName) {
+      setFullNameError("Full name is required.");
+      return;
+    }
+    if (!formData.email) {
+      setEmailError("Email is required.");
+      return;
+    }
+    if (!formData.phone) {
+      setPhoneError("Phone number is required.");
+      return;
+    }
+    if (!formData.password) {
+      setPasswordError("Password is required.");
+      return;
+    }
+
+    if (fullNameError || emailError || phoneError || passwordError) {
+      setErrorMess("Please correct the errors before submitting.");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const res = await axios.post(`${userRoute}/register`, formData);
+      setErrorMess("");
+    } catch (err) {
+      setIsError(true);
+      setErrorMess(err.response.data.message || "Internal Server Error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -92,6 +174,11 @@ const Register = () => {
             size="small"
             placeholder="Full Name"
             variant="outlined"
+            name="fullName"
+            value={formData.fullName}
+            onChange={handleChange}
+            error={!!fullNameError}
+            helperText={fullNameError}
           />
           <TextField
             id="email"
@@ -99,6 +186,11 @@ const Register = () => {
             size="small"
             placeholder="Email"
             variant="outlined"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            error={!!emailError}
+            helperText={emailError}
           />
           <TextField
             id="phone"
@@ -106,6 +198,11 @@ const Register = () => {
             size="small"
             placeholder="Phone Number"
             variant="outlined"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            error={!!phoneError}
+            helperText={phoneError}
           />
           <TextField
             id="password"
@@ -113,7 +210,34 @@ const Register = () => {
             size="small"
             placeholder="Password"
             variant="outlined"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            error={!!passwordError}
+            helperText={passwordError}
           />
+          <RadioGroup
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            row
+          >
+            <FormControlLabel
+              value="student"
+              control={<Radio />}
+              label="Student"
+            />
+            <FormControlLabel
+              value="recruiter"
+              control={<Radio />}
+              label="Recruiter"
+            />
+          </RadioGroup>
+          {isError && (
+            <Typography fontSize={15} color={"red"}>
+              {errorMess}
+            </Typography>
+          )}
         </FormControl>
         <Button
           sx={{
@@ -122,8 +246,10 @@ const Register = () => {
             fontSize: "15px",
           }}
           variant="contained"
+          onClick={handleRegister}
+          disabled={isLoading}
         >
-          Sign Up
+          {isLoading ? <CircularProgress size={26} /> : "Sign Up"}
         </Button>
         <Grid container alignItems="center" sx={{ my: 1 }}>
           <Grid item xs>
