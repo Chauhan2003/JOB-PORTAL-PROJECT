@@ -4,6 +4,7 @@ import cors from "cors";
 import morgan from "morgan";
 import dbConnection from "./database/index.js";
 import userRoutes from "./routes/user.route.js";
+import companyRoutes from "./routes/company.route.js";
 import dotnev from "dotenv";
 dotnev.config();
 
@@ -27,6 +28,7 @@ dbConnection();
 
 // Routes:-
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/company", companyRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
